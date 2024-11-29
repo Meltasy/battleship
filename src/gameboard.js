@@ -1,51 +1,70 @@
-import { Ship } from './ship.js'
+import { Ship, Carrier, Battleship, Cruiser, Submarine, Destroyer } from './ship.js'
+
+class Cell {
+  constructor(row, col) {
+    this.row = row
+    this.col = col
+  }
+}
 
 class Gameboard {
-  constructor() {
-    this.board = []
+  constructor(player) {
+    this.player = player
+    this.board = this.createBoard()
+    // Do we need somewhere to place all the existing ships for each board?
     // this.ships = [
-    //     new Ship('carrier', 5),
-    //     new Ship('battleship', 4),
-    //     new Ship('cruiser', 3),
-    //     new Ship('submarine', 3),
-    //     new Ship('destroyer', 2)
+    //   new Carrier('carrier'),
+    //   new Battleship('battleship'),
+    //   new Cruiser('cruiser'),
+    //   new Submarine('submarine'),
+    //   new Destroyer('destroyer')
     // ]
-    this.shipSizes = {
-        carrier: 5,
-        battleship: 4,
-        cruiser: 3,
-        submarine: 3,
-        destroyer: 2
-    }
   }
   createBoard(boardSize = 10) {
+    let board = []
     for (let row = 0; row < boardSize; row++) {
-      this.board.push([])
+      board.push([])
       for(let col = 0; col < boardSize; col++) {
-        this.board[row].push(0)  
+        board[row].push('Empty')  
       }
     }
+    return board
   }
+  // Gameboards should be able to place ships at specific coordinates by calling the 'Ship' class
   placeShips(ship, row, col, direction) {
-    const size = this.shipSizes[ship]
-    if (!size) {
-        throw new Error('This ship doesn\'t exist')
-    }
     if (direction === 'horizontal') {
-      for (let i = 0; i < size; i++) {
+      for (let i = 0; i < ship.length; i++) {
+        if (!this.board[row][col]) {
+          throw new Error('Error: This cell doesn\'t exist')
+        }
         this.board[row][col] = ship
         col++
       }
-    }
-    if (direction === 'vertical') {
-      for (let i = 0; i < size; i++) {
+    } else if (direction === 'vertical') {
+      for (let i = 0; i < ship.length; i++) {
+        if (!this.board[row][col]) {
+          throw new Error('Error: This cell doesn\'t exist')
+        }
         this.board[row][col] = ship
-        row++      }
+        row++
+      }
     }
   }
-//   receiveAttack() {
-
-//   }
+  receiveAttack(row, col) {
+    if (!this.board[row][col]) {
+      throw new Error('Error: This cell doesn\'t exist')
+    }
+    if (this.board[row][col] === 'Hit' || this.board[row][col] === 'Miss') {
+      throw new Error('Error: This cell already attacked')
+    }
+    if (this.board[row][col] === 'Empty') {
+      this.board[row][col] = 'Miss'
+    } else if (this.board[row][col] instanceof Ship) {
+      this.board[row][col].hit()
+      this.board[row][col].isSunk()
+      this.board[row][col] = 'Hit'
+    }
+  }
 }
 
-export { Gameboard }
+export { Cell, Gameboard }

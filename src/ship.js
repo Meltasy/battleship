@@ -1,7 +1,6 @@
 class Ship {
-  constructor(name, length) {
+  constructor(name) {
     this.name = name
-    this.length = length
     this.hits = 0
     // Do I need this? If not, delete and use isSunk() only
     this.sunk = false
@@ -16,7 +15,44 @@ class Ship {
       this.sunk = true
       return true
     }
+    return false
   }
 }
 
-export { Ship }
+class Carrier extends Ship {
+  constructor(name) {
+    super(name)
+    this.length = 5
+  }
+}
+
+class Battleship extends Ship {
+  constructor(name) {
+    super(name)
+    this.length = 4
+  }
+
+}
+
+class Cruiser extends Ship {
+  constructor(name) {
+    super(name)
+    this.length = 3
+  }
+}
+
+class Submarine extends Ship {
+  constructor(name) {
+    super(name)
+    this.length = 3
+  }
+}
+
+class Destroyer extends Ship {
+  constructor(name) {
+    super(name)
+    this.length = 2
+  }
+}
+
+export { Ship, Carrier, Battleship, Cruiser, Submarine, Destroyer }

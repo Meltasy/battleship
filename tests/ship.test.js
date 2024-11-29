@@ -1,11 +1,12 @@
-import { Ship } from '../src/ship.js'
+import { Ship, Carrier, Battleship, Cruiser, Submarine, Destroyer } from '../src/ship.js'
 
 // Don't test private methods -- or only test them during dev and delete them when you move to prod
 
 describe('ship is hit', () => {
   let ship
   beforeEach(() => {
-    ship = new Ship('carrier', 5)
+    // ship = new Ship('carrier', 5)
+    ship = new Carrier('carrier')
   })
   test('if ship hit, number of hits increases by 1', () => {
     ship.hit()
@@ -23,16 +24,19 @@ describe('ship is hit', () => {
 describe('ship is sunk', () => {
   let ship
   beforeEach(() => {
-    ship = new Ship('cruiser', 3)
+    // ship = new Ship('cruiser', 3)
+    ship = new Cruiser('cruiser')
   })
   test('ship is sunk', () => {
     for (let i = 0; i < 3; i++) {
       ship.hit()
     }
     expect(ship.isSunk()).toBeTruthy()
+    expect(ship.sunk).toBeTruthy()
   })
   test('ship is not sunk', () => {
     ship.hit()
     expect(ship.isSunk()).toBeFalsy()
+    expect(ship.sunk).toBeFalsy()
   })
 })
