@@ -1,10 +1,73 @@
+:root {
+    --text-color: #73C87D;
+    --background-color: #0B4612;
+    --primary-color-light: #4FA85A;
+    --primary-color: #30853A;
+    --primary-color-dark: #1B6624;
+}
+
 body {
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-family:'Courier New', Courier, monospace;
     font-size: 16px;
-    background-color: blue;
+    color: var(--text-color);
+    text-shadow: -2px -2px 2px var(--primary-color-light);
+    text-align: center;
+    background-color: var(--background-color);
 }
 
 h1 {
     font-size: 2.4rem;
-    color: whitesmoke;
+    margin: 10px;
+    padding: 0;
+}
+
+h2 {
+    font-size: 2rem;
+    margin: 0;
+    padding: 0;
+}
+
+button {
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 1.2rem;
+    appearance: none;
+    outline: none;
+    color: inherit;
+    text-shadow: -1px -1px 1px var(--primary-color-light);
+    background-color: inherit;
+    border: var(--primary-color-dark) solid 2px;
+    box-shadow: -2px -2px 2px var(--primary-color-light);
+    padding: 5px 10px;
+    margin: 20px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+#gameDisplay {
+    display: grid;
+    grid-template-rows: minmax(5px, 1fr) 5fr;
+    grid-template-columns: repeat(2, 5fr);
+    margin: 0 100px;
+    place-items: center;
+}
+
+.gameBoard {
+    display: grid;
+    grid-template-rows: repeat(10, 1fr);
+    grid-template-columns: repeat(10, 1fr);
+    background-color: var(--primary-color);
+    width: 500px;
+    height: 500px;
+}
+
+.cell {
+    padding: 10px;
+    outline: var(--primary-color-dark) solid 2px;
 }

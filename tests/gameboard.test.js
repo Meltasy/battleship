@@ -1,7 +1,5 @@
-import { Cell, Gameboard } from "../src/gameboard";
-import { Ship, Carrier, Battleship, Cruiser, Submarine, Destroyer } from '../src/ship.js'
-
-// Don't test private methods -- or only test them during dev and delete them when you move to prod
+import { Gameboard } from "../src/gameboard";
+import { Carrier, Battleship, Cruiser, Submarine, Destroyer } from '../src/ship.js'
 
 let gameboard
 let ship
@@ -14,6 +12,7 @@ describe('create gameboard', () => {
     gameboard.board[5][9] = 'Hit'
     expect(gameboard.board[5][9]).toEqual('Hit')
     expect(gameboard.board[2][5]).toBe('Empty')
+    expect(gameboard.board[9][9]).toBeTruthy()
   })
 })
 
@@ -69,5 +68,25 @@ describe('receive attack', () => {
     gameboard.receiveAttack(0, 5)
     gameboard.receiveAttack(0, 6)
     expect(ship.isSunk()).toBeTruthy()
+  })
+})
+
+describe('are all ships sunk', () => {
+  beforeEach(() => {
+    ship = new Submarine('submarine')
+    gameboard.placeShips(ship, 8, 4, 'horizontal')
+    gameboard.receiveAttack(8, 4)
+    gameboard.receiveAttack(8, 5)
+    ship = new Destroyer('destroyer')
+    gameboard.placeShips(ship, 1, 8, 'vertical')
+    gameboard.receiveAttack(1, 8)
+  })
+  test('all ships are sunk', () => {
+    gameboard.receiveAttack(8, 6)
+    gameboard.receiveAttack(2, 8)
+    expect(ship.isSunk()).toBeTruthy()
+  })
+  test('ships are hit, but not sunk', () => {
+    expect(ship.isSunk()).toBeFalsy()
   })
 })

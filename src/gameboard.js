@@ -1,24 +1,16 @@
 import { Ship, Carrier, Battleship, Cruiser, Submarine, Destroyer } from './ship.js'
 
-class Cell {
-  constructor(row, col) {
-    this.row = row
-    this.col = col
-  }
-}
-
 class Gameboard {
   constructor(player) {
     this.player = player
     this.board = this.createBoard()
-    // Do we need somewhere to place all the existing ships for each board?
-    // this.ships = [
-    //   new Carrier('carrier'),
-    //   new Battleship('battleship'),
-    //   new Cruiser('cruiser'),
-    //   new Submarine('submarine'),
-    //   new Destroyer('destroyer')
-    // ]
+    this.ships = [
+      new Carrier('carrier'),
+      new Battleship('battleship'),
+      new Cruiser('cruiser'),
+      new Submarine('submarine'),
+      new Destroyer('destroyer')
+    ]
   }
   createBoard(boardSize = 10) {
     let board = []
@@ -36,6 +28,8 @@ class Gameboard {
       for (let i = 0; i < ship.length; i++) {
         if (!this.board[row][col]) {
           throw new Error('Error: This cell doesn\'t exist')
+        } else if (this.board[row][col] instanceof Ship) {
+          throw new Error('Error: There is already a ship here')
         }
         this.board[row][col] = ship
         col++
@@ -44,9 +38,42 @@ class Gameboard {
       for (let i = 0; i < ship.length; i++) {
         if (!this.board[row][col]) {
           throw new Error('Error: This cell doesn\'t exist')
+        } else if (this.board[row][col] instanceof Ship) {
+          throw new Error('Error: There is already a ship here')
         }
         this.board[row][col] = ship
         row++
+      }
+    }
+  }
+  getRandomShips() {
+    for (let ship of this.ships) {
+      this.placeRandomShip(ship)
+    }
+  }
+  placeRandomShip(ship) {
+    let row = Math.floor(Math.random() * 10)
+    let col = Math.floor(Math.random() * 10)
+    let direction = Math.round(Math.random()) ? 'horizontal' : 'vertical'
+    if (direction === 'horizontal') {
+      col + ship.length > 9 ? col = 9 - ship.length : col
+      for (let i = 0; i < ship.length; i++) {
+        if (this.board[row][col] === 'Empty') {
+        this.board[row][col] = ship
+          col++
+        } else {
+          return this.placeRandomShip(ship)
+        }
+      }
+    } else if (direction === 'vertical') {
+      row + ship.length > 9 ? row = 9 - ship.length : row
+      for (let i = 0; i < ship.length; i++) {
+        if (this.board[row][col] === 'Empty') {
+          this.board[row][col] = ship
+          row++
+        } else {
+          return this.placeRandomShip(ship)
+        }
       }
     }
   }
@@ -55,7 +82,7 @@ class Gameboard {
       throw new Error('Error: This cell doesn\'t exist')
     }
     if (this.board[row][col] === 'Hit' || this.board[row][col] === 'Miss') {
-      throw new Error('Error: This cell already attacked')
+      throw new Error('Error: This cell\'s already been attacked')
     }
     if (this.board[row][col] === 'Empty') {
       this.board[row][col] = 'Miss'
@@ -63,8 +90,19 @@ class Gameboard {
       this.board[row][col].hit()
       this.board[row][col].isSunk()
       this.board[row][col] = 'Hit'
+      this.areAllShipsSunk()
     }
+  }
+  areAllShipsSunk(boardSize = 10) {
+    for (let row = 0; row < boardSize; row++) {
+      for(let col = 0; col < boardSize; col++) {
+        if (this.board[row][col] instanceof Ship) {
+          return false
+        }
+      }
+    }
+    return true
   }
 }
 
-export { Cell, Gameboard }
+export { Gameboard }
