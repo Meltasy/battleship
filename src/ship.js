@@ -2,8 +2,6 @@ class Ship {
   constructor(name) {
     this.name = name
     this.hits = 0
-    // Do I need this? If not, delete and use isSunk() only
-    this.sunk = false
   }
   hit() {
     if (this.hits < this.length) {
@@ -12,7 +10,6 @@ class Ship {
   }
   isSunk() {
     if (this.length === this.hits) {
-      this.sunk = true
       return true
     }
     return false

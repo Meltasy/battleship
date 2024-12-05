@@ -7,7 +7,7 @@
 }
 
 body {
-    font-family:'Courier New', Courier, monospace;
+    font-family: 'Courier New', Courier, monospace;
     font-size: 16px;
     color: var(--text-color);
     text-shadow: -2px -2px 2px var(--primary-color-light);
@@ -18,16 +18,17 @@ body {
 h1 {
     font-size: 2.4rem;
     margin: 10px;
-    padding: 0;
+    padding: 10px;
 }
 
 h2 {
     font-size: 2rem;
-    margin: 0;
-    padding: 0;
+    margin: 10px;
+    padding: 10px;
 }
 
-button {
+button,
+input {
     font-family: inherit;
     font-weight: 700;
     font-size: 1.2rem;
@@ -39,7 +40,11 @@ button {
     border: var(--primary-color-dark) solid 2px;
     box-shadow: -2px -2px 2px var(--primary-color-light);
     padding: 5px 10px;
-    margin: 20px;
+    margin: 5px 20px;
+}
+
+label {
+    margin: 5px 20px;
 }
 
 ul {
@@ -48,6 +53,27 @@ ul {
     margin: 0;
     display: flex;
     justify-content: center;
+}
+
+::backdrop {
+    background-color: var(--primary-color);
+    opacity: 0.75;
+}
+
+:modal {
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: inherit;
+    background-color: inherit;
+    border: 2px solid var(--primary-colour-dark);
+    box-shadow: -2px -2px 2px var(--primary-colour-light);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 #gameDisplay {
@@ -70,4 +96,8 @@ ul {
 .cell {
     padding: 10px;
     outline: var(--primary-color-dark) solid 2px;
+}
+
+.cell:active {
+    background-color: var(--primary-color-dark);
 }

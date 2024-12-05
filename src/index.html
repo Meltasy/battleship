@@ -9,9 +9,22 @@
     <h1>Battleship</h1>
     <ul>
         <li><button type="button" id="newGame">New Game</button></li>
-        <li><button type="button" id="addPlayer">Add Player</button></li>
-        <li><button type="button" id="placeShips">Place Ships</button></li>
+        <li><button type="button" id="newPlayer">New Player</button></li>
+        <li><button type="button" id="placeShips">New Ship Placement</button></li>
     </ul>
-    <p id="gameDisplay"></p>
+    <dialog>
+        <form method="dialog">
+            <label for="playerName">Who wants to play?</label>
+            <input type="text" id="playerName" name="playerName" />
+            <div>
+                <button type="submit" id="addBtn">Save</button>
+                <button type="button" id="cancelBtn">Cancel</button>
+            </div>
+        </form>
+    </dialog>
+    <div id="gameDisplay">
+        <div id="playerDisplay"></div>
+        <div id="enemyDisplay"></div>
+    </div>
 </body>
 </html>

@@ -22,7 +22,6 @@ class Gameboard {
     }
     return board
   }
-  // Gameboards should be able to place ships at specific coordinates by calling the 'Ship' class
   placeShips(ship, row, col, direction) {
     if (direction === 'horizontal') {
       for (let i = 0; i < ship.length; i++) {
@@ -82,7 +81,11 @@ class Gameboard {
       throw new Error('Error: This cell doesn\'t exist')
     }
     if (this.board[row][col] === 'Hit' || this.board[row][col] === 'Miss') {
-      throw new Error('Error: This cell\'s already been attacked')
+      if (this.player.isEnemy === 'no') {
+        throw new Error('Error: This cell\'s already been attacked')
+      } else {
+        this.computerAttack(row, col)
+      }
     }
     if (this.board[row][col] === 'Empty') {
       this.board[row][col] = 'Miss'
@@ -92,6 +95,11 @@ class Gameboard {
       this.board[row][col] = 'Hit'
       this.areAllShipsSunk()
     }
+  }
+  computerAttack() {
+    let row = Math.floor(Math.random() * 10)
+    let col = Math.floor(Math.random() * 10)
+    this.receiveAttack(row, col)
   }
   areAllShipsSunk(boardSize = 10) {
     for (let row = 0; row < boardSize; row++) {

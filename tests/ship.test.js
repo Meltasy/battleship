@@ -28,11 +28,11 @@ describe('ship is sunk', () => {
       ship.hit()
     }
     expect(ship.isSunk()).toBeTruthy()
-    expect(ship.sunk).toBeTruthy()
+    // expect(ship.sunk).toBeTruthy()
   })
   test('ship is not sunk', () => {
     ship.hit()
     expect(ship.isSunk()).toBeFalsy()
-    expect(ship.sunk).toBeFalsy()
+    // expect(ship.sunk).toBeFalsy()
   })
 })
