@@ -4,9 +4,43 @@ import { GameControl } from './gameControl.js'
 class GameDisplay {
   constructor() {
   }
+  // makePlayerDialog() {
+  //   // Where's the form?
+  //   const playerDialog = document.createElement('dialog')
+  //   const playerLabel = document.createElement('label')
+  //   const playerLabelText = document.createTextNode('Who wants to play?')
+  //   playerLabel.setAttribute('for', 'playerName')
+  //   playerLabel.appendChild(playerLabelText)
+  //   playerDialog.appendChild(playerLabel)
+
+  //   const playerInput = document.createElement('input')
+  //   playerInput.setAttribute('type', 'text')
+  //   playerInput.setAttribute('id', 'playerName')
+  //   playerInput.setAttribute('name', 'playerName')
+  //   playerInput.setAttribute('required', '')
+  //   playerInput.required = true
+  //   playerDialog.appendChild(playerInput)
+
+  //   const closeBtns = document.createElement('div')
+  //   const saveBtn = document.createElement('button')
+  //   saveBtn.setAttribute('type', 'submit')
+  //   saveBtn.setAttribute('id', 'saveBtn')
+  //   saveBtn.textContent = 'Save'
+  //   closeBtns.appendChild(saveBtn)
+
+  //   const cancelBtn = document.createElement('button')
+  //   cancelBtn.setAttribute('type', 'button')
+  //   cancelBtn.setAttribute('id', 'cancelBtn')
+  //   closeBtns.appendChild(cancelBtn)
+  //   playerDialog.append(closeBtns)
+
+  //   document.body.appendChild(playerDialog)
+  //   // playerDialog.showModal()
+  // }
   displayBoard(player, enemy) {
     const playerDisplay = document.querySelector('#playerDisplay')
     const enemyDisplay = document.querySelector('#enemyDisplay')
+    // Check if I need this while loop and why?
     while (playerDisplay.lastChild && enemyDisplay.lastChild) {
       playerDisplay.removeChild(playerDisplay.lastChild)
       enemyDisplay.removeChild(enemyDisplay.lastChild)
@@ -85,6 +119,23 @@ class GameDisplay {
         board.appendChild(cell)
       }
     }
+  }
+  // Modal not showing
+  endGameModal(winner) {
+    const winnerModal = document.createElement('div')
+    winnerModal.setAttribute('id', 'winnerModal')
+    const contentModal = document.createElement('div')
+    contentModal.setAttribute('class', 'contentModal')
+    const headModal = document.createElement('h2')
+    headModal.textContent = `${winner.name} is the winner!`
+    const closeModal = document.createElement('span')
+    closeModal.setAttribute('class', 'closeModal')
+    const icon = document.createElement('box-icon')
+    icon.setAttribute('name', 'x')
+    contentModal.appendChild(headModal)
+    contentModal.appendChild(closeModal)
+    winnerModal.appendChild(contentModal)
+    document.body.appendChild(winnerModal)
   }
 }
 

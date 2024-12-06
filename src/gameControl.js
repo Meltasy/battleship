@@ -7,32 +7,42 @@ class GameControl {
     this.enemy = enemy
     this.display = new GameDisplay()
   }
+  startGame() {
+    this.enemy.gameboard.board = this.enemy.gameboard.createBoard()
+    this.player.gameboard.getRandomShips()
+    this.enemy.gameboard.getRandomShips()
+    this.display.displayBoard(this.player, this.enemy)
+    console.log(this.enemy.gameboard)
+  }
   createPlayer() {
     const newPlayer = document.querySelector('#newPlayer')
     const dialog = document.querySelector('dialog')
     const form = document.querySelector('form')
-    const addBtn = document.querySelector('#addBtn')
+    const saveBtn = document.querySelector('#saveBtn')
     const cancelBtn = document.querySelector('#cancelBtn')
     window.addEventListener('load', () => {
-        dialog.showModal()
+    //   this.display.makePlayerDialog()
+      dialog.showModal()
     })
     newPlayer.addEventListener('click', () => {
+    //   this.display.makePlayerDialog()
       dialog.showModal()
     })
     cancelBtn.addEventListener('click', () => {
       dialog.close()
       form.reset()
     })
-    addBtn.addEventListener('click', (e) => {
+    saveBtn.addEventListener('click', (e) => {
       e.preventDefault()
       let playerName = document.querySelector('#playerName').value
       dialog.close()
       form.reset()
       this.player = new Player(playerName)
-      this.enemy.gameboard.board = this.enemy.gameboard.createBoard()
-      this.player.gameboard.getRandomShips()
-      this.enemy.gameboard.getRandomShips()
-      this.display.displayBoard(this.player, this.enemy)
+      this.startGame()
+    //   this.enemy.gameboard.board = this.enemy.gameboard.createBoard()
+    //   this.player.gameboard.getRandomShips()
+    //   this.enemy.gameboard.getRandomShips()
+    //   this.display.displayBoard(this.player, this.enemy)
     })
   }
   placeShips() {
@@ -41,18 +51,17 @@ class GameControl {
       this.player.gameboard.board = this.player.gameboard.createBoard()
       this.player.gameboard.getRandomShips()
       this.display.updateDisplay(this.player, this.enemy)
-      console.log(this.enemy.gameboard)
     })
   }
-  startGame() {
+  newGame() {
     const newGame = document.querySelector('#newGame')
     newGame.addEventListener('click', () => {
       this.player.gameboard.board = this.player.gameboard.createBoard()
-      this.enemy.gameboard.board = this.enemy.gameboard.createBoard()
-      this.player.gameboard.getRandomShips()
-      this.enemy.gameboard.getRandomShips()
-      this.display.displayBoard(this.player, this.enemy)
-      console.log(this.enemy.gameboard)
+      this.startGame()
+    //   this.enemy.gameboard.board = this.enemy.gameboard.createBoard()
+    //   this.player.gameboard.getRandomShips()
+    //   this.enemy.gameboard.getRandomShips()
+    //   this.display.displayBoard(this.player, this.enemy)
     })
   }
   playRound(player, enemy, row, col) {
@@ -81,16 +90,35 @@ class GameControl {
 //     }, 1500)
 //   }
   endGame(player, enemy) {
+  // Why does it return to 'Mystery Player's Game?
     if (player.gameboard.areAllShipsSunk() === true) {
-        alert(`${enemy.name} is the winner`)
-        this.startGame()
+      // Add promise or async / await so that new game doesn't start until winner modal has been closed
+      this.winnerModal(enemy)
+      this.player = new Player(player.name)
+      this.startGame()
     } else if (enemy.gameboard.areAllShipsSunk() === true) {
-        alert(`${player.name} is the winner`)
-        this.startGame()
+      this.winnerModal(player)
+      this.player = new Player(player.name)
+      this.startGame()
     } else {
-        return false
+      return false
     }
   }
+  // Modal not showing
+  winnerModal(winner) {
+    this.display.endGameModal(winner)
+    const winnerModal = document.querySelector('#winnerModal')
+    const closeModal = document.querySelector('.closeModal')
+    winnerModal.style.display = 'block'
+    closeModal.onclick = () => {
+      winnerModal.style.display = 'none'
+    }
+    window.onclick = (e) => {
+      if (e.target == winnerModal) {
+        winnerModal.style.display = 'none'           
+      }
+    }
+  }    
 }
 
 export { GameControl }
