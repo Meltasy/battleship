@@ -4,38 +4,14 @@ import { GameControl } from './gameControl.js'
 class GameDisplay {
   constructor() {
   }
-  // makePlayerDialog() {
-  //   // Where's the form?
-  //   const playerDialog = document.createElement('dialog')
-  //   const playerLabel = document.createElement('label')
-  //   const playerLabelText = document.createTextNode('Who wants to play?')
-  //   playerLabel.setAttribute('for', 'playerName')
-  //   playerLabel.appendChild(playerLabelText)
-  //   playerDialog.appendChild(playerLabel)
-
-  //   const playerInput = document.createElement('input')
-  //   playerInput.setAttribute('type', 'text')
-  //   playerInput.setAttribute('id', 'playerName')
-  //   playerInput.setAttribute('name', 'playerName')
-  //   playerInput.setAttribute('required', '')
-  //   playerInput.required = true
-  //   playerDialog.appendChild(playerInput)
-
-  //   const closeBtns = document.createElement('div')
-  //   const saveBtn = document.createElement('button')
-  //   saveBtn.setAttribute('type', 'submit')
-  //   saveBtn.setAttribute('id', 'saveBtn')
-  //   saveBtn.textContent = 'Save'
-  //   closeBtns.appendChild(saveBtn)
-
-  //   const cancelBtn = document.createElement('button')
-  //   cancelBtn.setAttribute('type', 'button')
-  //   cancelBtn.setAttribute('id', 'cancelBtn')
-  //   closeBtns.appendChild(cancelBtn)
-  //   playerDialog.append(closeBtns)
-
-  //   document.body.appendChild(playerDialog)
-  //   // playerDialog.showModal()
+  // displayShips(player) {
+  //   const playerBoard = document.querySelector('#playerBoard')
+  //   const shipDisplay = document.querySelector('#shipDisplay')
+  //   for (let i = 0; i < player.gameboard.ships.length; i++) {
+  //     let shipBody = document.createElement('div')
+  //     shipBody.setAttribute('class', 'shipBody')
+  //     shipBody.dataset.shipObject = player.gameboard.ships[i]
+  //   }
   // }
   displayBoard(player, enemy) {
     const playerDisplay = document.querySelector('#playerDisplay')
@@ -82,13 +58,6 @@ class GameDisplay {
         control.playRound(player, enemy, row, col)
       })
     })
-    // Is there a way to disable the gameboard eventListeners ? element.replaceWith(element.cloneNode(true))
-    // cell.addEventListener('click', () => {
-    //   control.playerTurn(player, enemy, row, col)
-    // })
-    // cell.removeEventListener('click', () => {
-    //   control.enemyTurn(player, enemy)
-    // })
   }
   renderBoard(board, currentBoard, isEnemy) {
     board.setAttribute('class', 'gameBoard')
@@ -107,6 +76,9 @@ class GameDisplay {
         } else if (currentBoard.board[i][j] === 'Hit') {
           icon.setAttribute('name', 'hot')
           icon.setAttribute('type', 'solid')
+        } else if (currentBoard.board[i][j] === 'Sunk') {
+          icon.setAttribute('name', 'skull')
+          icon.setAttribute('type', 'solid')
         } else if (currentBoard.board[i][j] instanceof Ship) {
           if (isEnemy === 'no') {
             icon.setAttribute('name', 'ship')
@@ -120,22 +92,16 @@ class GameDisplay {
       }
     }
   }
-  // Modal not showing
-  endGameModal(winner) {
-    const winnerModal = document.createElement('div')
-    winnerModal.setAttribute('id', 'winnerModal')
-    const contentModal = document.createElement('div')
-    contentModal.setAttribute('class', 'contentModal')
-    const headModal = document.createElement('h2')
-    headModal.textContent = `${winner.name} is the winner!`
-    const closeModal = document.createElement('span')
-    closeModal.setAttribute('class', 'closeModal')
-    const icon = document.createElement('box-icon')
-    icon.setAttribute('name', 'x')
-    contentModal.appendChild(headModal)
-    contentModal.appendChild(closeModal)
-    winnerModal.appendChild(contentModal)
-    document.body.appendChild(winnerModal)
+  displayWinner(winner) {
+    const showWinner = document.querySelector('#showWinner')
+    const winnerName = document.querySelector('#winnerName')
+    showWinner.showModal()
+    winnerName.textContent = `${winner.name} is the winner!`
+    window.addEventListener('click', (e) => {
+      if (e.target == showWinner) {
+        showWinner.close()
+      }
+    }) 
   }
 }
 

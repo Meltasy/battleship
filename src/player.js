@@ -5,6 +5,7 @@ class Player {
     this.name = name
     this.gameboard = new Gameboard(this.name)
     this.isEnemy = 'no'
+    this.shipsArray = []
   }
 }
 
