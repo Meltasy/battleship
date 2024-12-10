@@ -10,9 +10,10 @@
     <ul>
         <li><button type="button" id="newGame">New Game</button></li>
         <li><button type="button" id="newPlayer">New Player</button></li>
-        <li><button type="button" id="placeShips">New Ship Placement</button></li>
+        <!-- <li><button type="button" id="placeShips">New Ship Placement</button></li> -->
     </ul>
-    <dialog>
+    <h2 id="results"></h2>
+    <dialog id="choosePlayer">
         <form method="dialog">
             <label for="playerName">Who wants to play?</label>
             <input type="text" id="playerName" name="playerName" />
@@ -22,6 +23,10 @@
             </div>
         </form>
     </dialog>
+    <dialog close id="showWinner">
+        <h3 id="winnerName"></h3>
+    </dialog>
+    <div id="shipDisplay"></div>
     <div id="gameDisplay">
         <div id="playerDisplay"></div>
         <div id="enemyDisplay"></div>
