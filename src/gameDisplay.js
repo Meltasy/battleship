@@ -14,22 +14,17 @@ class GameDisplay {
     changeDirection.addEventListener('click', () => {
       toggle.classList.toggle('active')
       active = !active
-      if (active) {
-        for (let i = 0; i < player.gameboard.ships.length; i++) {
-          let eachShip = player.gameboard.ships[i]
-          const toggleDirection = document.querySelector('#' + eachShip.name)
+      for (let i = 0; i < player.gameboard.ships.length; i++) {
+        let eachShip = player.gameboard.ships[i]
+        const toggleDirection = document.querySelector('#' + eachShip.name)
+        if (active) {
           toggleDirection.classList.add('shipVertical')
           eachShip.direction = 'vertical'
-          this.updatePlayerDisplay(player)
-        }
-      } else {
-        for (let i = 0; i < player.gameboard.ships.length; i++) {
-          let eachShip = player.gameboard.ships[i]
-          const toggleDirection = document.querySelector('#' + eachShip.name)
+        } else {
           toggleDirection.classList.remove('shipVertical')
           eachShip.direction = 'horizontal'
-          this.updatePlayerDisplay(player)
         }
+        this.updatePlayerDisplay(player)
       }
     })
     changeDirection.appendChild(toggle)
@@ -41,11 +36,22 @@ class GameDisplay {
       ship.setAttribute('class', 'ship')
       ship.setAttribute('id', name)
       ship.draggable = 'true'
-      ship.addEventListener('dragstart', () => {
+      ship.addEventListener('dragstart', (e) => {
         ship.classList.add('dragging')
+        e.dataTransfer.clearData()
+        e.dataTransfer.setData('text/plain', e.target.id)
       })
       ship.addEventListener('dragend', () => {
         ship.classList.remove('dragging')
+        const shipsArray = [...document.querySelectorAll('.ship')]
+        const shipsPlaced = shipsArray.every((item) => {
+          return item.style.display === 'none'
+        })
+        if (shipsPlaced === true) {
+          while (shipDisplay.lastChild) {
+            shipDisplay.removeChild(shipDisplay.lastChild)
+          }
+        }
       })
       for (let j = 0; j < player.gameboard.ships[i].length; j++) {
         let shipBody = document.createElement('div')
@@ -97,18 +103,28 @@ class GameDisplay {
     playerCells.forEach(cell => {
       cell.addEventListener('dragover', (e) => {
         e.preventDefault()
+      })
+      cell.addEventListener('drop', (e) => {
+        e.preventDefault()
+        const data = e.dataTransfer.getData('text')
+        const source = document.querySelector('#' + data)
         let currentShip = document.querySelector('.dragging')
         let ship
         for (let item of player.gameboard.ships) {
-          if (item.name === currentShip.id) {
+          if (item.name === data) {
             ship = item
           }
         }
         let direction = ship.direction
         let row = cell.dataset.row
         let col = cell.dataset.col
-        player.gameboard.placeShips(ship, row, col, direction)
-        this.updatePlayerDisplay(player,enemy)
+        if (player.gameboard.placeShips(player, ship, row, col, direction) === false) {
+          const shipDisplay = document.querySelector('#shipDisplay')
+          shipDisplay.appendChild(currentShip)
+        } else {
+          player.gameboard.placeShips(player, ship, row, col, direction)
+        }
+        this.updatePlayerDisplay(player, enemy)
         currentShip.style.display = 'none'
       })
     })

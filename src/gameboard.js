@@ -22,25 +22,33 @@ class Gameboard {
     }
     return board
   }
-  placeShips(ship, row, col, direction) {
+  placeShips(player, ship, row, col, direction) {
     if (direction === 'horizontal') {
+      col + ship.length > 9 ? col = 10 - ship.length : col
       for (let i = 0; i < ship.length; i++) {
-        if (!this.board[row][col]) {
-          throw new Error('Error: This cell doesn\'t exist')
-        } else if (this.board[row][col] instanceof Ship) {
-          throw new Error('Error: There is already a ship here')
+        if (this.board[row][col] !== 'Empty') {
+          return false
         }
+        col++
+      }
+      col = col - ship.length
+      for (let i = 0; i < ship.length; i++) {
         this.board[row][col] = ship
+        player.shipsArray.push([ship, row, col])
         col++
       }
     } else if (direction === 'vertical') {
+      row + ship.length > 9 ? row = 10 - ship.length : row
       for (let i = 0; i < ship.length; i++) {
-        if (!this.board[row][col]) {
-          throw new Error('Error: This cell doesn\'t exist')
-        } else if (this.board[row][col] instanceof Ship) {
-          throw new Error('Error: There is already a ship here')
+        if (this.board[row][col] !== 'Empty') {
+          return false
         }
+        row++
+      }
+      row = row - ship.length
+      for (let i = 0; i < ship.length; i++) {
         this.board[row][col] = ship
+        player.shipsArray.push([ship, row, col])
         row++
       }
     }
@@ -56,7 +64,7 @@ class Gameboard {
     let col = Math.floor(Math.random() * 10)
     let direction = Math.round(Math.random()) ? 'horizontal' : 'vertical'
     if (direction === 'horizontal') {
-      col + ship.length > 9 ? col = 9 - ship.length : col
+      col + ship.length > 9 ? col = 10 - ship.length : col
       for (let i = 0; i < ship.length; i++) {
         if (this.board[row][col] !== 'Empty') {
           return this.placeRandomShip(player, ship)
@@ -70,7 +78,7 @@ class Gameboard {
         col++
       }
     } else if (direction === 'vertical') {
-      row + ship.length > 9 ? row = 9 - ship.length : row
+      row + ship.length > 9 ? row = 10 - ship.length : row
       for (let i = 0; i < ship.length; i++) {
         if (this.board[row][col] !== 'Empty') {
           return this.placeRandomShip(player, ship)

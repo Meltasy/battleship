@@ -5,6 +5,6 @@ import { GameControl } from './gameControl.js'
 let game = new GameControl()
 game.newGame()
 game.createPlayer()
-game.choosePlaceShips()
 
 // Add an await async for fetching the boxicons?
+// Run tests and fix whatever is broken

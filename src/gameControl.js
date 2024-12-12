@@ -10,10 +10,13 @@ class GameControl {
   startGame() {
     const results = document.querySelector('#results')
     this.enemy.gameboard.board = this.enemy.gameboard.createBoard()
-    // this.player.gameboard.getRandomShips(this.player)
+    this.display.displayShips(this.player)
     this.enemy.gameboard.getRandomShips(this.enemy)
     this.display.displayBoard(this.player, this.enemy)
+    // Need to find a way to have text that says 'Place your ships', then once ships are placed, change to below.
+    // Rewrite displayShips function so that there is a function to 'chooseShips', and it controls the eventlisteners.
     results.textContent = `Let's start the battle, ${this.player.name}!`
+    console.log(this.player.gameboard)
     console.log(this.enemy.gameboard)
   }
   createPlayer() {
@@ -41,10 +44,6 @@ class GameControl {
       this.startGame()
     })
   }
-  choosePlaceShips() {
-    this.display.displayShips(this.player)
-    // Need to playRound once all shops are placed
-  }
   newGame() {
     const newGame = document.querySelector('#newGame')
     newGame.addEventListener('click', () => {
@@ -56,13 +55,14 @@ class GameControl {
     const enemyBoard = document.querySelector('#enemyBoard')
     const results = document.querySelector('#results')
     enemy.gameboard.receiveAttack(enemy, row, col)
-    console.log(enemy.gameboard)
+    console.log('enemy.gameboard', enemy.gameboard)
     this.display.updateEnemyDisplay(player, enemy)
     if (this.endGame(player, enemy) === true) return
     enemyBoard.style.pointerEvents = 'none'
     results.textContent = `Take your shot, ${enemy.name}!`
     setTimeout(() => {
       player.gameboard.computerAttack(player)
+      console.log('player.gameboard', player.gameboard)
       this.display.updatePlayerDisplay(player, enemy)
       if (this.endGame(player, enemy) === true) return
       enemyBoard.style.pointerEvents = 'auto'
