@@ -2,6 +2,7 @@ class Ship {
   constructor(name) {
     this.name = name
     this.hits = 0
+    this.direction = 'horizontal'
   }
   hit() {
     if (this.hits < this.length) {

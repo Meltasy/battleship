@@ -10,7 +10,7 @@ class GameControl {
   startGame() {
     const results = document.querySelector('#results')
     this.enemy.gameboard.board = this.enemy.gameboard.createBoard()
-    this.player.gameboard.getRandomShips(this.player)
+    // this.player.gameboard.getRandomShips(this.player)
     this.enemy.gameboard.getRandomShips(this.enemy)
     this.display.displayBoard(this.player, this.enemy)
     results.textContent = `Let's start the battle, ${this.player.name}!`
@@ -41,15 +41,10 @@ class GameControl {
       this.startGame()
     })
   }
-  // placeShips() {
-  //   // After a win, when this button is pressed, it shows the computer's previous board ?!
-  //   const placeShips = document.querySelector('#placeShips')
-  //   placeShips.addEventListener('click', () => {
-  //     this.player.gameboard.board = this.player.gameboard.createBoard()
-  //     this.player.gameboard.getRandomShips(this.player)
-  //     this.display.updateDisplay(this.player, this.enemy)
-  //   })
-  // }
+  choosePlaceShips() {
+    this.display.displayShips(this.player)
+    // Need to playRound once all shops are placed
+  }
   newGame() {
     const newGame = document.querySelector('#newGame')
     newGame.addEventListener('click', () => {
@@ -62,13 +57,13 @@ class GameControl {
     const results = document.querySelector('#results')
     enemy.gameboard.receiveAttack(enemy, row, col)
     console.log(enemy.gameboard)
-    this.display.updateDisplay(player, enemy)
+    this.display.updateEnemyDisplay(player, enemy)
     if (this.endGame(player, enemy) === true) return
     enemyBoard.style.pointerEvents = 'none'
     results.textContent = `Take your shot, ${enemy.name}!`
     setTimeout(() => {
       player.gameboard.computerAttack(player)
-      this.display.updateDisplay(player, enemy)
+      this.display.updatePlayerDisplay(player, enemy)
       if (this.endGame(player, enemy) === true) return
       enemyBoard.style.pointerEvents = 'auto'
       results.textContent = `Take your shot, ${player.name}!`
