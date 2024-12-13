@@ -24,9 +24,10 @@ class Gameboard {
   }
   placeShips(player, ship, row, col, direction) {
     if (direction === 'horizontal') {
-      col + ship.length > 9 ? col = 10 - ship.length : col
+      // This pushes ships to the end of the col
+      // col + ship.length > 9 ? col = 10 - ship.length : col
       for (let i = 0; i < ship.length; i++) {
-        if (this.board[row][col] !== 'Empty') {
+        if (this.board[row][col] !== 'Empty' || !this.board[row][col]) {
           return false
         }
         col++
@@ -38,9 +39,10 @@ class Gameboard {
         col++
       }
     } else if (direction === 'vertical') {
-      row + ship.length > 9 ? row = 10 - ship.length : row
+      // This pushes ships to the end of the row
+      // row + ship.length > 9 ? row = 10 - ship.length : row
       for (let i = 0; i < ship.length; i++) {
-        if (this.board[row][col] !== 'Empty') {
+        if (this.board[row][col] !== 'Empty' || !this.board[row][col]) {
           return false
         }
         row++
@@ -98,6 +100,7 @@ class Gameboard {
       throw new Error('Error: This cell doesn\'t exist')
     }
     if (this.board[row][col] === 'Hit' || this.board[row][col] === 'Miss') {
+      // This isn't working?
       if (this.player.isEnemy === 'no') {
         throw new Error('Error: This cell\'s already been attacked')
       } else {
@@ -129,15 +132,10 @@ class Gameboard {
     let col = Math.floor(Math.random() * 10)
     this.receiveAttack(player, row, col)
   }
-  areAllShipsSunk(boardSize = 10) {
-    for (let row = 0; row < boardSize; row++) {
-      for(let col = 0; col < boardSize; col++) {
-        if (this.board[row][col] instanceof Ship) {
-          return false
-        }
-      }
-    }
-    return true
+  areAllShipsSunk() {
+    return this.ships.every((item) => {
+      return item.isSunk()
+    })
   }
 }
 

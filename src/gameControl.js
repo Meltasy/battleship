@@ -10,12 +10,11 @@ class GameControl {
   startGame() {
     const results = document.querySelector('#results')
     this.enemy.gameboard.board = this.enemy.gameboard.createBoard()
-    this.display.displayShips(this.player)
     this.enemy.gameboard.getRandomShips(this.enemy)
     this.display.displayBoard(this.player, this.enemy)
+    this.display.displayShips(this.player)
     // Need to find a way to have text that says 'Place your ships', then once ships are placed, change to below.
-    // Rewrite displayShips function so that there is a function to 'chooseShips', and it controls the eventlisteners.
-    results.textContent = `Let's start the battle, ${this.player.name}!`
+    results.textContent = `Place your ships, ${this.player.name}!`
     console.log(this.player.gameboard)
     console.log(this.enemy.gameboard)
   }

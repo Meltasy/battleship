@@ -4,32 +4,50 @@ import { GameControl } from './gameControl.js'
 class GameDisplay {
   constructor() {
   }
+  toggleDisplays(shipDisplay) {
+    const enemyDisplay = document.querySelector('#enemyDisplay')
+    if (shipDisplay.style.display === 'none') {
+      enemyDisplay.style.display = 'grid'
+    } else {
+      enemyDisplay.style.display = 'none'
+    }
+  }
   displayShips(player) {
     const shipDisplay = document.querySelector('#shipDisplay')
-    const changeDirection = document.createElement('div')
-    const toggle = document.createElement('div')
-    changeDirection.setAttribute('id', 'changeDirection')
-    toggle.setAttribute('class', 'toggle')
+    while (shipDisplay.lastChild) {
+      shipDisplay.removeChild(shipDisplay.lastChild)
+    }
+    shipDisplay.style.display = 'grid'
+    this.toggleDisplays(shipDisplay)
+    const buttons = document.createElement('div')
+    buttons.setAttribute('class', 'buttons')
+    const directionBtn = document.createElement('div')
+    directionBtn.setAttribute('id', 'directionBtn')
+    const directionToggle = document.createElement('div')
+    directionToggle.setAttribute('class', 'directionToggle')
+    const undoBtn = document.createElement('button')
+    undoBtn.setAttribute('id', 'undoBtn')
+    undoBtn.textContent = 'Undo'
     let active = false
-    changeDirection.addEventListener('click', () => {
-      toggle.classList.toggle('active')
+    directionBtn.addEventListener('click', () => {
       active = !active
-      for (let i = 0; i < player.gameboard.ships.length; i++) {
-        let eachShip = player.gameboard.ships[i]
-        const toggleDirection = document.querySelector('#' + eachShip.name)
-        if (active) {
-          toggleDirection.classList.add('shipVertical')
-          eachShip.direction = 'vertical'
-        } else {
-          toggleDirection.classList.remove('shipVertical')
-          eachShip.direction = 'horizontal'
-        }
-        this.updatePlayerDisplay(player)
-      }
+      directionToggle.classList.toggle('active')
+      shipDisplay.classList.toggle('vertical')
+      buttons.classList.toggle('vertical')
+      this.changeShipDirection(player, active)
     })
-    changeDirection.appendChild(toggle)
-    shipDisplay.appendChild(changeDirection)
-    // Draggable ships - the ships in the ship display
+    undoBtn.addEventListener('click', () => {
+      let lastShip = player.shipsArray.slice(-1)[0]
+      let shipDiv = document.querySelector('#' + lastShip[0].name)
+      shipDisplay.appendChild(shipDiv)
+      shipDiv.style.display = 'flex'
+      this.undoShipPlace(player, lastShip)
+      this.updatePlayerDisplay(player)
+    })
+    directionBtn.appendChild(directionToggle)
+    buttons.appendChild(directionBtn)
+    buttons.appendChild(undoBtn)
+    shipDisplay.appendChild(buttons)
     for (let i = 0; i < player.gameboard.ships.length; i++) {
       let ship = document.createElement('div')
       let name = player.gameboard.ships[i].name
@@ -43,15 +61,7 @@ class GameDisplay {
       })
       ship.addEventListener('dragend', () => {
         ship.classList.remove('dragging')
-        const shipsArray = [...document.querySelectorAll('.ship')]
-        const shipsPlaced = shipsArray.every((item) => {
-          return item.style.display === 'none'
-        })
-        if (shipsPlaced === true) {
-          while (shipDisplay.lastChild) {
-            shipDisplay.removeChild(shipDisplay.lastChild)
-          }
-        }
+        this.shipsReady(player, shipDisplay)
       })
       for (let j = 0; j < player.gameboard.ships[i].length; j++) {
         let shipBody = document.createElement('div')
@@ -65,22 +75,59 @@ class GameDisplay {
       shipDisplay.appendChild(ship)
     }
   }
+  changeShipDirection(player, active) {
+    for (let i = 0; i < player.gameboard.ships.length; i++) {
+      const shipDiv = document.querySelector('#' + player.gameboard.ships[i].name)
+      shipDiv.classList.toggle('shipVertical')
+      if (active) {
+        player.gameboard.ships[i].direction = 'vertical'
+      } else {
+        player.gameboard.ships[i].direction = 'horizontal'
+      }
+      this.updatePlayerDisplay(player)
+    }
+  }
+  undoShipPlace(player, lastShip) {
+    let row
+    let col
+    for (let i = 0; i < player.shipsArray.length; i++) {
+      if (player.shipsArray[i][0].name === lastShip[0].name) {
+        row = player.shipsArray[i][1]
+        col = player.shipsArray[i][2]
+        player.shipsArray.splice(i, 1)
+        player.gameboard.board[row][col] = 'Empty'
+        i--
+      }
+    }
+  }
+  shipsReady(player, shipDisplay) {
+    const results = document.querySelector('#results')
+    const shipsPlacedArray = [...document.querySelectorAll('.ship')]
+    const shipsPlaced = shipsPlacedArray.every((item) => {
+      return item.style.display === 'none'
+    })
+    if (shipsPlaced === true) {
+      while (shipDisplay.lastChild) {
+        shipDisplay.removeChild(shipDisplay.lastChild)
+      }
+      shipDisplay.style.display = 'none'
+      this.toggleDisplays(shipDisplay)
+      results.textContent = `Let's start the battle, ${player.name}!`
+    }
+  }
   displayBoard(player, enemy) {
     const playerDisplay = document.querySelector('#playerDisplay')
     const enemyDisplay = document.querySelector('#enemyDisplay')
-    // Check if I need this while loop and why?
     while (playerDisplay.lastChild && enemyDisplay.lastChild) {
       playerDisplay.removeChild(playerDisplay.lastChild)
       enemyDisplay.removeChild(enemyDisplay.lastChild)
     }
-    
     const playerHead = document.createElement('h2')
     playerHead.textContent = `${player.name}\'s Board`
     playerDisplay.appendChild(playerHead)
     const enemyHead = document.createElement('h2')
     enemyHead.textContent = `${enemy.name}\'s Board`
     enemyDisplay.appendChild(enemyHead)
-    
     const playerBoard = document.createElement('div')
     playerBoard.setAttribute('id', 'playerBoard')
     playerDisplay.appendChild(playerBoard)
@@ -97,8 +144,6 @@ class GameDisplay {
     }
     const playerCurrentBoard = player.gameboard
     this.renderBoard(playerBoard, playerCurrentBoard, player.isEnemy)
-
-    // Draggable containers - the cells in the player gameboard
     const playerCells = playerBoard.querySelectorAll('.cell')
     playerCells.forEach(cell => {
       cell.addEventListener('dragover', (e) => {
@@ -107,27 +152,29 @@ class GameDisplay {
       cell.addEventListener('drop', (e) => {
         e.preventDefault()
         const data = e.dataTransfer.getData('text')
-        const source = document.querySelector('#' + data)
-        let currentShip = document.querySelector('.dragging')
-        let ship
-        for (let item of player.gameboard.ships) {
-          if (item.name === data) {
-            ship = item
-          }
-        }
-        let direction = ship.direction
-        let row = cell.dataset.row
-        let col = cell.dataset.col
-        if (player.gameboard.placeShips(player, ship, row, col, direction) === false) {
-          const shipDisplay = document.querySelector('#shipDisplay')
-          shipDisplay.appendChild(currentShip)
-        } else {
-          player.gameboard.placeShips(player, ship, row, col, direction)
-        }
+        this.placeShipCell(player, cell, data)
         this.updatePlayerDisplay(player, enemy)
-        currentShip.style.display = 'none'
       })
     })
+  }
+  placeShipCell(player, cell, data) {
+    const currentShip = document.querySelector('.dragging')
+    const shipDisplay = document.querySelector('#shipDisplay')
+    let ship
+    for (let item of player.gameboard.ships) {
+      if (item.name === data) {
+        ship = item
+      }
+    }
+    let direction = ship.direction
+    let row = cell.dataset.row
+    let col = cell.dataset.col
+    if (player.gameboard.placeShips(player, ship, row, col, direction) === false) {
+      shipDisplay.appendChild(currentShip)
+    } else {
+      player.gameboard.placeShips(player, ship, row, col, direction)
+    }
+    currentShip.style.display = 'none'
   }
   updateEnemyDisplay(player, enemy) {
     const enemyBoard = document.querySelector('#enemyBoard')
