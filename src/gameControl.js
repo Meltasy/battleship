@@ -13,10 +13,7 @@ class GameControl {
     this.enemy.gameboard.getRandomShips(this.enemy)
     this.display.displayBoard(this.player, this.enemy)
     this.display.displayShips(this.player)
-    // Need to find a way to have text that says 'Place your ships', then once ships are placed, change to below.
     results.textContent = `Place your ships, ${this.player.name}!`
-    console.log(this.player.gameboard)
-    console.log(this.enemy.gameboard)
   }
   createPlayer() {
     const newPlayer = document.querySelector('#newPlayer')
@@ -53,15 +50,13 @@ class GameControl {
   playRound(player, enemy, row, col) {
     const enemyBoard = document.querySelector('#enemyBoard')
     const results = document.querySelector('#results')
-    enemy.gameboard.receiveAttack(enemy, row, col)
-    console.log('enemy.gameboard', enemy.gameboard)
+    enemy.gameboard.receiveAttack(enemy, row, col, player.isEnemy)
     this.display.updateEnemyDisplay(player, enemy)
     if (this.endGame(player, enemy) === true) return
     enemyBoard.style.pointerEvents = 'none'
     results.textContent = `Take your shot, ${enemy.name}!`
     setTimeout(() => {
-      player.gameboard.computerAttack(player)
-      console.log('player.gameboard', player.gameboard)
+      player.gameboard.computerAttack(player, enemy.isEnemy)
       this.display.updatePlayerDisplay(player, enemy)
       if (this.endGame(player, enemy) === true) return
       enemyBoard.style.pointerEvents = 'auto'

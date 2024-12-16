@@ -6,5 +6,4 @@ let game = new GameControl()
 game.newGame()
 game.createPlayer()
 
-// Add an await async for fetching the boxicons?
-// Run tests and fix whatever is broken
+// Change to webpack mode: 'production' and assess issues

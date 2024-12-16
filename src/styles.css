@@ -55,6 +55,7 @@ dialog::backdrop {
 
 dialog:modal {
     display: block;
+    outline: none;
     font-family: inherit;
     font-weight: 700;
     font-size: 1.2rem;
@@ -126,11 +127,6 @@ form {
     transition: 0.3s ease;
 }
 
-#directionBtn.active {
-    background-color: var(--primary-color-dark);
-    border: var(--primary-color) 2px solid;
-}
-
 .directionToggle {
     position: absolute;
     left: 0;
@@ -145,8 +141,6 @@ form {
     left: 100%;
     transform: translateX(-100%);
     transition: 0.3 ease;
-    background-color: var(--primary-color-light);
-    border: var(--primary-color) 2px solid;
 }
 
 .buttons {

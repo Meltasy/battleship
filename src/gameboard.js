@@ -24,8 +24,6 @@ class Gameboard {
   }
   placeShips(player, ship, row, col, direction) {
     if (direction === 'horizontal') {
-      // This pushes ships to the end of the col
-      // col + ship.length > 9 ? col = 10 - ship.length : col
       for (let i = 0; i < ship.length; i++) {
         if (this.board[row][col] !== 'Empty' || !this.board[row][col]) {
           return false
@@ -39,8 +37,6 @@ class Gameboard {
         col++
       }
     } else if (direction === 'vertical') {
-      // This pushes ships to the end of the row
-      // row + ship.length > 9 ? row = 10 - ship.length : row
       for (let i = 0; i < ship.length; i++) {
         if (this.board[row][col] !== 'Empty' || !this.board[row][col]) {
           return false
@@ -95,16 +91,15 @@ class Gameboard {
       }
     }
   }
-  receiveAttack(player, row, col) {
+  receiveAttack(player, row, col, isEnemy) {
     if (!this.board[row][col]) {
       throw new Error('Error: This cell doesn\'t exist')
     }
     if (this.board[row][col] === 'Hit' || this.board[row][col] === 'Miss') {
-      // This isn't working?
-      if (this.player.isEnemy === 'no') {
+      if (isEnemy === 'no') {
         throw new Error('Error: This cell\'s already been attacked')
       } else {
-        this.computerAttack(player, row, col)
+        this.computerAttack(player, isEnemy)
       }
     }
     if (this.board[row][col] === 'Empty') {
@@ -112,6 +107,7 @@ class Gameboard {
     } else if (this.board[row][col] instanceof Ship) {
       this.board[row][col].hit()
       this.board[row][col] = 'Hit'
+      player.hitsArray.push([row, col])
       this.ships.forEach((item) => {
         if (item.isSunk() === true) {
           let ship = item.name
@@ -127,10 +123,43 @@ class Gameboard {
       this.areAllShipsSunk()
     }
   }
-  computerAttack(player) {
-    let row = Math.floor(Math.random() * 10)
-    let col = Math.floor(Math.random() * 10)
-    this.receiveAttack(player, row, col)
+  computerAttack(player, isEnemy) {
+    if (player.hitsArray.length > 0) {
+      this.targetAttack(player)
+    } else {
+      let row = Math.floor(Math.random() * 10)
+      let col = Math.floor(Math.random() * 10)
+      this.receiveAttack(player, row, col, isEnemy)
+    }
+  }
+  targetAttack(player) {
+    for (let i = 0; i < player.hitsArray.length; i++) {
+      let row = player.hitsArray[i][0]
+      let col = player.hitsArray[i][1]
+      if (this.board[row][col] === 'Sunk') {
+        player.hitsArray.splice(i, 1)
+        i--
+      } else {
+        let nextHitArray = [[row + 1, col], [row, col + 1], [row -1, col], [row, col - 1]]
+        for (let j = nextHitArray.length - 1; j >= 0; j--) {
+          let r = nextHitArray[j][0]
+          let c = nextHitArray[j][1]
+          if (r < 0 || r > 9) {
+            nextHitArray.splice(j, 1)
+          } else if (c < 0 || c > 9) {
+            nextHitArray.splice(j, 1)
+          } else if (this.board[r][c] === 'Sunk' || this.board[r][c] === 'Hit' || this.board[r][c] === 'Miss') {
+            nextHitArray.splice(j, 1)
+          } else if (this.board[r][c] === 'Empty' || this.board[r][c] instanceof Ship) {
+            return this.receiveAttack(player, r, c)
+          }
+        }
+        nextHitArray = []
+        player.hitsArray.splice(i, 1)
+        i--
+      }
+    }
+    this.computerAttack(player)
   }
   areAllShipsSunk() {
     return this.ships.every((item) => {

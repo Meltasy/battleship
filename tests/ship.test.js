@@ -3,7 +3,7 @@ import { Carrier, Cruiser } from '../src/ship.js'
 describe('ship is hit', () => {
   let ship
   beforeEach(() => {
-    ship = new Carrier('carrier')
+    ship = new Carrier('Carrier')
   })
   test('if ship hit, number of hits increases by 1', () => {
     ship.hit()
@@ -21,7 +21,7 @@ describe('ship is hit', () => {
 describe('ship is sunk', () => {
   let ship
   beforeEach(() => {
-    ship = new Cruiser('cruiser')
+    ship = new Cruiser('Cruiser')
   })
   test('ship is sunk', () => {
     for (let i = 0; i < 3; i++) {

@@ -29,12 +29,18 @@ class GameDisplay {
     undoBtn.setAttribute('id', 'undoBtn')
     undoBtn.textContent = 'Undo'
     let active = false
+    if (directionToggle.classList.contains('active')) {
+      directionToggle.classList.remove('active')
+    }
+    if (shipDisplay.classList.contains('vertical')) {
+      shipDisplay.classList.remove('vertical')
+    }
+    if (buttons.classList.contains('vertical')) {
+      buttons.classList.remove('vertical')
+    }
     directionBtn.addEventListener('click', () => {
       active = !active
-      directionToggle.classList.toggle('active')
-      shipDisplay.classList.toggle('vertical')
-      buttons.classList.toggle('vertical')
-      this.changeShipDirection(player, active)
+      this.changeShipDirection(player, active, directionToggle, shipDisplay, buttons)
     })
     undoBtn.addEventListener('click', () => {
       let lastShip = player.shipsArray.slice(-1)[0]
@@ -67,6 +73,7 @@ class GameDisplay {
         let shipBody = document.createElement('div')
         let icon = document.createElement('box-icon')
         shipBody.setAttribute('class', 'shipBody')
+        shipBody.setAttribute('id', name + j)
         icon.setAttribute('name', 'ship')
         icon.setAttribute('type', 'solid')
         shipBody.appendChild(icon)
@@ -75,13 +82,19 @@ class GameDisplay {
       shipDisplay.appendChild(ship)
     }
   }
-  changeShipDirection(player, active) {
+  changeShipDirection(player, active, directionToggle, shipDisplay, buttons) {
     for (let i = 0; i < player.gameboard.ships.length; i++) {
       const shipDiv = document.querySelector('#' + player.gameboard.ships[i].name)
       shipDiv.classList.toggle('shipVertical')
       if (active) {
+        directionToggle.classList.add('active')
+        shipDisplay.classList.add('vertical')
+        buttons.classList.add('vertical')
         player.gameboard.ships[i].direction = 'vertical'
       } else {
+        directionToggle.classList.remove('active')
+        shipDisplay.classList.remove('vertical')
+        buttons.classList.remove('vertical')
         player.gameboard.ships[i].direction = 'horizontal'
       }
       this.updatePlayerDisplay(player)
