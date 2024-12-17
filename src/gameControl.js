@@ -10,6 +10,11 @@ class GameControl {
   startGame() {
     const results = document.querySelector('#results')
     this.enemy.gameboard.board = this.enemy.gameboard.createBoard()
+    this.enemy.gameboard.ships.forEach((item) => { 
+      item.hits = 0
+    })
+    this.enemy.shipsArray = []
+    this.enemy.hitsArray = []
     this.enemy.gameboard.getRandomShips(this.enemy)
     this.display.displayBoard(this.player, this.enemy)
     this.display.displayShips(this.player)
@@ -44,6 +49,11 @@ class GameControl {
     const newGame = document.querySelector('#newGame')
     newGame.addEventListener('click', () => {
       this.player.gameboard.board = this.player.gameboard.createBoard()
+      this.player.gameboard.ships.forEach((item) => { 
+        item.hits = 0
+      })
+      this.player.shipsArray = []
+      this.player.hitsArray = []
       this.startGame()
     })
   }

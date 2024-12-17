@@ -28,16 +28,15 @@ class GameDisplay {
     const undoBtn = document.createElement('button')
     undoBtn.setAttribute('id', 'undoBtn')
     undoBtn.textContent = 'Undo'
-    let active = false
-    if (directionToggle.classList.contains('active')) {
+    if (player.gameboard.ships[0].direction = 'vertical') {
+      player.gameboard.ships.forEach((item) => {
+        item.direction = 'horizontal'
+      })
       directionToggle.classList.remove('active')
-    }
-    if (shipDisplay.classList.contains('vertical')) {
       shipDisplay.classList.remove('vertical')
-    }
-    if (buttons.classList.contains('vertical')) {
       buttons.classList.remove('vertical')
     }
+    let active = false
     directionBtn.addEventListener('click', () => {
       active = !active
       this.changeShipDirection(player, active, directionToggle, shipDisplay, buttons)
