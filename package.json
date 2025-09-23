@@ -14,8 +14,8 @@
     "type": "git",
     "url": "git+https://github.com/Meltasy/battleship.git"
   },
-  "author": "Meltasy",
-  "license": "UNLICENSED",
+  "author": "Melissa Vialaneix",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Meltasy/battleship/issues"
   },
