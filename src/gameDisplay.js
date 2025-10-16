@@ -25,10 +25,18 @@ class GameDisplay {
     directionBtn.setAttribute('id', 'directionBtn')
     const directionToggle = document.createElement('div')
     directionToggle.setAttribute('class', 'directionToggle')
+    const horizontalArrow = document.createElement('box-icon')
+    horizontalArrow.setAttribute('name', 'arrow-big-right')
+    horizontalArrow.setAttribute('type', 'solid')
+    horizontalArrow.setAttribute('class', 'horizontalArrow')
+    const verticalArrow = document.createElement('box-icon')
+    verticalArrow.setAttribute('name', 'arrow-big-down')
+    verticalArrow.setAttribute('type', 'solid')
+    verticalArrow.setAttribute('class', 'verticalArrow')
     const undoBtn = document.createElement('button')
     undoBtn.setAttribute('id', 'undoBtn')
     undoBtn.textContent = 'Undo'
-    if (player.gameboard.ships[0].direction = 'vertical') {
+    if (player.gameboard.ships[0].direction === 'vertical') {
       player.gameboard.ships.forEach((item) => {
         item.direction = 'horizontal'
       })
@@ -49,6 +57,8 @@ class GameDisplay {
       this.undoShipPlace(player, lastShip)
       this.updatePlayerDisplay(player)
     })
+    directionToggle.appendChild(horizontalArrow)
+    directionToggle.appendChild(verticalArrow)
     directionBtn.appendChild(directionToggle)
     buttons.appendChild(directionBtn)
     buttons.appendChild(undoBtn)
