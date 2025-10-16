@@ -25,14 +25,10 @@ class GameDisplay {
     directionBtn.setAttribute('id', 'directionBtn')
     const directionToggle = document.createElement('div')
     directionToggle.setAttribute('class', 'directionToggle')
-    const horizontalArrow = document.createElement('box-icon')
-    horizontalArrow.setAttribute('name', 'arrow-big-right')
-    horizontalArrow.setAttribute('type', 'solid')
-    horizontalArrow.setAttribute('class', 'horizontalArrow')
-    const verticalArrow = document.createElement('box-icon')
-    verticalArrow.setAttribute('name', 'arrow-big-down')
-    verticalArrow.setAttribute('type', 'solid')
-    verticalArrow.setAttribute('class', 'verticalArrow')
+    const horizontalArrow = document.createElement('i')
+    horizontalArrow.setAttribute('class', 'bx bxs-arrow-big-right')
+    const verticalArrow = document.createElement('i')
+    verticalArrow.setAttribute('class', 'bx bxs-arrow-big-down')
     const undoBtn = document.createElement('button')
     undoBtn.setAttribute('id', 'undoBtn')
     undoBtn.textContent = 'Undo'
@@ -57,8 +53,8 @@ class GameDisplay {
       this.undoShipPlace(player, lastShip)
       this.updatePlayerDisplay(player)
     })
-    directionToggle.appendChild(horizontalArrow)
-    directionToggle.appendChild(verticalArrow)
+    directionBtn.appendChild(horizontalArrow)
+    directionBtn.appendChild(verticalArrow)
     directionBtn.appendChild(directionToggle)
     buttons.appendChild(directionBtn)
     buttons.appendChild(undoBtn)
@@ -71,20 +67,20 @@ class GameDisplay {
       ship.draggable = 'true'
       ship.addEventListener('dragstart', (e) => {
         ship.classList.add('dragging')
-        e.dataTransfer.clearData()
+        e.dataTransfer.effectAllowed = 'move'
         e.dataTransfer.setData('text/plain', e.target.id)
       })
       ship.addEventListener('dragend', () => {
         ship.classList.remove('dragging')
-        this.shipsReady(player, shipDisplay)
+        setTimeout(() => {
+          this.shipsReady(player, shipDisplay, directionToggle, buttons)
+        }, 10)
       })
       for (let j = 0; j < player.gameboard.ships[i].length; j++) {
         let shipBody = document.createElement('div')
-        let icon = document.createElement('box-icon')
-        shipBody.setAttribute('class', 'shipBody')
+        let icon = document.createElement('i')
+        shipBody.setAttribute('class', 'bx bxs-ship shipIcon')
         shipBody.setAttribute('id', name + j)
-        icon.setAttribute('name', 'ship')
-        icon.setAttribute('type', 'solid')
         shipBody.appendChild(icon)
         ship.appendChild(shipBody)
       }
@@ -122,7 +118,7 @@ class GameDisplay {
       }
     }
   }
-  shipsReady(player, shipDisplay) {
+  shipsReady(player, shipDisplay, directionToggle, buttons) {
     const results = document.querySelector('#results')
     const shipsPlacedArray = [...document.querySelectorAll('.ship')]
     const shipsPlaced = shipsPlacedArray.every((item) => {
@@ -133,6 +129,9 @@ class GameDisplay {
         shipDisplay.removeChild(shipDisplay.lastChild)
       }
       shipDisplay.style.display = 'none'
+      directionToggle.classList.remove('active')
+      shipDisplay.classList.remove('vertical')
+      buttons.classList.remove('vertical')
       this.toggleDisplays(shipDisplay)
       results.textContent = `Let's start the battle, ${player.name}!`
     }
@@ -170,33 +169,48 @@ class GameDisplay {
     playerCells.forEach(cell => {
       cell.addEventListener('dragover', (e) => {
         e.preventDefault()
+        e.dataTransfer.dropEffect = 'move'
+      })
+      cell.addEventListener('dragenter', (e) => {
+        e.preventDefault()
+        cell.classList.add('dragOver')
+      })
+      cell.addEventListener('dragleave', () => {
+        cell.classList.remove('dragOver')
       })
       cell.addEventListener('drop', (e) => {
         e.preventDefault()
-        const data = e.dataTransfer.getData('text')
-        this.placeShipCell(player, cell, data)
-        this.updatePlayerDisplay(player, enemy)
+        e.stopPropagation()
+        const data = e.dataTransfer.getData('text/plain')
+        if (data) {
+          this.placeShipCell(player, cell, data)
+          this.updatePlayerDisplay(player, enemy)
+        }
       })
     })
   }
   placeShipCell(player, cell, data) {
     const currentShip = document.querySelector('.dragging')
     const shipDisplay = document.querySelector('#shipDisplay')
+    if (!currentShip || !data) return
     let ship
     for (let item of player.gameboard.ships) {
       if (item.name === data) {
         ship = item
+        break
       }
     }
+    if (!ship) return
     let direction = ship.direction
-    let row = cell.dataset.row
-    let col = cell.dataset.col
-    if (player.gameboard.placeShips(player, ship, row, col, direction) === false) {
+    let row = parseInt(cell.dataset.row)
+    let col = parseInt(cell.dataset.col)
+    const placeSuccess = player.gameboard.placeShips(player, ship, row, col, direction)
+    if (placeSuccess === false) {
+      currentShip.style.display = 'flex'
       shipDisplay.appendChild(currentShip)
     } else {
-      player.gameboard.placeShips(player, ship, row, col, direction)
+      currentShip.style.display = 'none'
     }
-    currentShip.style.display = 'none'
   }
   updateEnemyDisplay(player, enemy) {
     const enemyBoard = document.querySelector('#enemyBoard')
@@ -224,24 +238,20 @@ class GameDisplay {
         cell.setAttribute('class', 'cell')
         cell.dataset.row = i
         cell.dataset.col = j
-        let icon = document.createElement('box-icon')
+        let icon = document.createElement('i')
         if (currentBoard.board[i][j] === 'Empty') {
-          icon.setAttribute('name', 'water')
+          icon.setAttribute('class', 'bx bx-water')
         } else if (currentBoard.board[i][j] === 'Miss') {
-          icon.setAttribute('name', 'x-circle')
-          icon.setAttribute('type', 'solid')
+          icon.setAttribute('class', 'bx bxs-x-circle')
         } else if (currentBoard.board[i][j] === 'Hit') {
-          icon.setAttribute('name', 'hot')
-          icon.setAttribute('type', 'solid')
+          icon.setAttribute('class', 'bx bxs-hot')
         } else if (currentBoard.board[i][j] === 'Sunk') {
-          icon.setAttribute('name', 'skull')
-          icon.setAttribute('type', 'solid')
+          icon.setAttribute('class', 'bx bxs-ghost')
         } else if (currentBoard.board[i][j] instanceof Ship) {
           if (isEnemy === 'no') {
-            icon.setAttribute('name', 'ship')
-            icon.setAttribute('type', 'solid')
+            icon.setAttribute('class', 'bx bxs-ship')
           } else {
-            icon.setAttribute('name', 'water')
+          icon.setAttribute('class', 'bx bx-water')
           }
         }
         cell.appendChild(icon)
