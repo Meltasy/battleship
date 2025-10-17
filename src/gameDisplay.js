@@ -70,8 +70,9 @@ class GameDisplay {
         e.dataTransfer.effectAllowed = 'move'
         e.dataTransfer.setData('text/plain', e.target.id)
       })
-      ship.addEventListener('dragend', () => {
+      ship.addEventListener('dragend', (e) => {
         ship.classList.remove('dragging')
+        this.clearHighlights()
         setTimeout(() => {
           this.shipsReady(player, shipDisplay, directionToggle, buttons)
         }, 10)
@@ -173,20 +174,74 @@ class GameDisplay {
       })
       cell.addEventListener('dragenter', (e) => {
         e.preventDefault()
-        cell.classList.add('dragOver')
+        const draggingShip = document.querySelector('.dragging')
+        const shipId = draggingShip ? draggingShip.id : null
+        if (shipId) {
+          this.highlightShipPlacement(player, cell, shipId)
+        }
       })
-      cell.addEventListener('dragleave', () => {
-        cell.classList.remove('dragOver')
+      cell.addEventListener('dragleave', (e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+          this.clearHighlights()
+        }
       })
       cell.addEventListener('drop', (e) => {
         e.preventDefault()
         e.stopPropagation()
+        this.clearHighlights()
         const data = e.dataTransfer.getData('text/plain')
         if (data) {
           this.placeShipCell(player, cell, data)
           this.updatePlayerDisplay(player, enemy)
         }
       })
+    })
+  }
+  highlightShipPlacement(player, startCell, shipId) {
+    this.clearHighlights()
+    let ship = player.gameboard.ships.find(ship => ship.name === shipId)
+    if (!ship) return
+    const startRow = parseInt(startCell.dataset.row)
+    const startCol = parseInt(startCell.dataset.col)
+    const boardSize = player.gameboard.board.length
+    const cellsToHighlight = []
+    let placementValid = true
+    for (let i = 0; i < ship.length; i++) {
+      let row = startRow
+      let col = startCol
+      if (ship.direction === 'horizontal') {
+        col = startCol + i
+      } else {
+        row = startRow + i
+      }
+      if (row >= boardSize || col >= boardSize || row < 0 || col < 0) {
+        placementValid = false
+        break
+      }
+      const cellContent = player.gameboard.board[row][col]
+      if (cellContent !== 'Empty' && cellContent instanceof Ship && cellContent.name !== shipId) {
+        placementValid = false
+      }
+      cellsToHighlight.push({ row, col })
+    }
+    cellsToHighlight.forEach(({ row, col }) => {
+      const cell = document.querySelector(`#playerBoard .cell[data-row="${row}"][data-col="${col}"]`)
+      if (cell) {
+        if (placementValid) {
+          cell.classList.add('dragOver')
+        } else {
+          cell.classList.add('dragInvalid')
+        }
+      }
+    })
+    return placementValid
+  }
+  clearHighlights() {
+    document.querySelectorAll('.dragOver').forEach(cell => {
+      cell.classList.remove('dragOver')
+    })
+    document.querySelectorAll('.dragInvalid').forEach(cell => {
+      cell.classList.remove('dragInvalid')
     })
   }
   placeShipCell(player, cell, data) {

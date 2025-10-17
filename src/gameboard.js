@@ -25,31 +25,26 @@ class Gameboard {
   placeShips(player, ship, row, col, direction) {
     if (direction === 'horizontal') {
       for (let i = 0; i < ship.length; i++) {
-        if (this.board[row][col] !== 'Empty' || !this.board[row][col]) {
+        if (col + i >= 10 || this.board[row][col + i] !== 'Empty') {
           return false
         }
-        col++
       }
-      col = col - ship.length
       for (let i = 0; i < ship.length; i++) {
-        this.board[row][col] = ship
-        player.shipsArray.push([ship, row, col])
-        col++
+        this.board[row][col + i] = ship
+        player.shipsArray.push([ship, row, col + i])
       }
     } else if (direction === 'vertical') {
       for (let i = 0; i < ship.length; i++) {
-        if (this.board[row][col] !== 'Empty' || !this.board[row][col]) {
+        if (row + i >= 10 || this.board[row + i][col] !== 'Empty') {
           return false
         }
-        row++
       }
-      row = row - ship.length
       for (let i = 0; i < ship.length; i++) {
-        this.board[row][col] = ship
-        player.shipsArray.push([ship, row, col])
-        row++
+        this.board[row + i][col] = ship
+        player.shipsArray.push([ship, row + i, col])
       }
     }
+    return true
   }
   getRandomShips(player) {
     player.shipsArray = []
@@ -62,40 +57,38 @@ class Gameboard {
     let col = Math.floor(Math.random() * 10)
     let direction = Math.round(Math.random()) ? 'horizontal' : 'vertical'
     if (direction === 'horizontal') {
-      col + ship.length > 9 ? col = 10 - ship.length : col
+      if (col + ship.length > 10) {
+        col = 10 - ship.length
+      }
       for (let i = 0; i < ship.length; i++) {
-        if (this.board[row][col] !== 'Empty') {
+        if (this.board[row][col + i] !== 'Empty') {
           return this.placeRandomShip(player, ship)
         }
-        col++
       }
-      col = col - ship.length
       for (let i = 0; i < ship.length; i++) {
-        this.board[row][col] = ship
-        player.shipsArray.push([ship, row, col])
-        col++
+        this.board[row][col + i] = ship
+        player.shipsArray.push([ship, row, col + i])
       }
     } else if (direction === 'vertical') {
-      row + ship.length > 9 ? row = 10 - ship.length : row
+      if (row + ship.length > 10) {
+        row = 10 - ship.length
+      }
       for (let i = 0; i < ship.length; i++) {
-        if (this.board[row][col] !== 'Empty') {
+        if (this.board[row + i][col] !== 'Empty') {
           return this.placeRandomShip(player, ship)
         }
-        row++
       }
-      row = row - ship.length
       for (let i = 0; i < ship.length; i++) {
-        this.board[row][col] = ship
-        player.shipsArray.push([ship, row, col])
-        row++
+        this.board[row + i][col] = ship
+        player.shipsArray.push([ship, row + i, col])
       }
     }
   }
   receiveAttack(player, row, col, isEnemy) {
-    if (!this.board[row][col]) {
+    if (!this.board[row] || !this.board[row][col]) {
       throw new Error('Error: This cell doesn\'t exist')
     }
-    if (this.board[row][col] === 'Hit' || this.board[row][col] === 'Miss') {
+    if (this.board[row][col] === 'Hit' || this.board[row][col] === 'Miss' || this.board[row][col] === 'Sunk') {
       if (isEnemy === 'no') {
         throw new Error('Error: This cell\'s already been attacked')
       } else {
@@ -119,7 +112,7 @@ class Gameboard {
           sunkCoords.forEach(([row, col]) => {
             this.board[row][col] = 'Sunk'
           })
-          player.hitsArray = player.hitsArray.filter(([row, col]) => !sunkCoords.some(([someRow, someCol]) => someRow === row && someCol === col))
+          player.hitsArray = player.hitsArray.filter(([hitRow, hitCol]) => !sunkCoords.some(([sunkRow, sunkCol]) => sunkRow === hitRow && sunkCol === hitCol))
         }
       })
       this.areAllShipsSunk()
@@ -149,7 +142,7 @@ class Gameboard {
     if (hits.length === 0) return null
     if (hits.length === 1) {
       const [row, col] = hits[0]
-      const options = [[row + 1, col], [row, col + 1], [row -1, col], [row, col - 1]]
+      const options = [[row + 1, col], [row, col + 1], [row - 1, col], [row, col - 1]]
       return this.chooseCell(options)
     }
     const sameRow = hits.every(([row]) => row === hits[0][0])
@@ -166,7 +159,7 @@ class Gameboard {
       return this.chooseCell([[minR - 1, hits[0][1]], [maxR + 1, hits[0][1]]])
     }
     const [row, col] = hits[hits.length - 1]
-    const fallback = [[row + 1, col], [row, col + 1], [row -1, col], [row, col - 1]]
+    const fallback = [[row + 1, col], [row, col + 1], [row - 1, col], [row, col - 1]]
     return this.chooseCell(fallback)
   }
   chooseCell(cells) {

@@ -216,6 +216,7 @@ form {
     font-size: 1.5rem;
     color: var(--background-color);
     padding: 14px;
+    outline: var(--primary-color-dark) solid 2px;
 }
 
 .shipBody {
@@ -232,4 +233,9 @@ form {
 .dragOver {
     background-color: var(--primary-color-dark);
     color: var(--text-color);
+}
+
+.dragInvalid {
+    background-color: var(--background-color);
+    color: var(--background-color);
 }
