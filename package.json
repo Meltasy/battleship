@@ -6,9 +6,9 @@
   "scripts": {
     "test": "jest",
     "watch": "jest --watch *.js",
-    "build": "webpack",
+    "build": "webpack && cp -r public dist/public",
     "dev": "webpack serve",
-    "deploy": "git subtree push --prefeix dist origin gh-pages"
+    "deploy": "git subtree push --prefix dist origin gh-pages"
   },
   "repository": {
     "type": "git",
