@@ -1,8 +1,8 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
-  // mode: 'development',
   mode: 'production',
   entry: './src/index.js',
   output: {
@@ -10,7 +10,6 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     clean: true,
   },
-  // devtool: 'eval-source-map',
   devtool: 'source-map',
   devServer: {
     watchFiles: ['./src/index.html'],
@@ -18,6 +17,11 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
         template: './src/index.html',
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'src/preview.png', to: 'preview.png' }
+      ],
     }),
   ],
   module: {
@@ -29,9 +33,7 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             targets: "defaults",
-            presets: [
-              ['@babel/preset-env'],
-            ],
+            presets: [['@babel/preset-env']],
           },
         },
       },
